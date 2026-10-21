@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FaultBed</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="logo">⚡</span> FaultBed <span id="mode" class="badge"></span></div>
+  <nav id="tabs">
+    <button data-tab="testbed" class="on">Testbed</button>
+    <button data-tab="experiment">Experiment</button>
+    <button data-tab="live">Live</button>
+    <button data-tab="results">Results</button>
+  </nav>
+  <div id="runchip" class="runchip"></div>
+</header>
+
+<main>
+  <!-- ============ TESTBED ============ -->
+  <section id="tab-testbed" class="tab on">
+    <div class="row between">
+      <h2>Connected boards</h2>
+      <button id="scan" class="btn">Rescan</button>
+    </div>
+    <p class="hint">Every board runs the same firmware. Node ids, roles, protocol and faults are assigned per experiment.
+      Boards are matched to scenario nodes by MAC order unless a scenario pins them.</p>
+    <div class="card"><table class="tbl" id="boards"></table></div>
+  </section>
+
+  <!-- ============ EXPERIMENT ============ -->
+  <section id="tab-experiment" class="tab">
+    <div class="row between wrap">
+      <div class="row wrap">
+        <select id="scnfile"></select>
+        <button id="load" class="btn ghost">Load</button>
+        <input id="savename" placeholder="file name.yaml">
+        <button id="save" class="btn ghost">Save</button>
+      </div>
+      <div class="row">
+        <span id="estimate" class="muted"></span>
+        <button id="runbtn" class="btn primary">Run experiment</button>
+      </div>
+    </div>
+    <div id="warnings"></div>
+
+    <div class="grid2">
+      <div class="col">
+        <div class="card"><h3>1 · Experiment</h3><div id="f-general"></div></div>
+        <div class="card"><h3>2 · Protocol under test</h3><div id="f-transport"></div></div>
+        <div class="card"><h3>4 · Default link faults <span class="muted small">(every hop unless overridden)</span></h3><div id="f-default"></div></div>
+      </div>
+      <div class="col">
+        <div class="card">
+          <div class="row between"><h3>3 · Topology</h3>
+            <label class="small"><input type="checkbox" id="editlinks"> click two nodes to add/remove a link</label></div>
+          <div id="f-topology"></div>
+          <svg id="topo" viewBox="0 0 600 340" preserveAspectRatio="xMidYMid meet"></svg>
+          <p class="hint small">Click a link to inject faults on it (each direction separately). Drag nodes to rearrange.</p>
+          <div id="linkpanel"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card"><div class="row between"><h3>5 · Traffic flows</h3><button class="btn ghost" id="addflow">+ flow</button></div>
+      <table class="tbl" id="flows"></table></div>
+    <div class="card"><div class="row between"><h3>6 · Timeline <span class="muted small">(scheduled failures &amp; fault changes)</span></h3>
+      <button class="btn ghost" id="addevent">+ event</button></div>
+      <table class="tbl" id="timeline"></table></div>
+    <div class="card"><div class="row between"><h3>7 · Sweep <span class="muted small">(one run per combination × repeats)</span></h3>
+      <button class="btn ghost" id="addsweep">+ parameter</button></div>
+      <table class="tbl" id="sweep"></table></div>
+    <details class="card"><summary>Resolved scenario (YAML) &amp; per-node firmware config</summary>
+      <pre id="yaml" class="code"></pre></details>
+  </section>
+
+  <!-- ============ LIVE ============ -->
+  <section id="tab-live" class="tab">
+    <div class="card">
+      <div class="row between wrap"><div><b id="phase">idle</b> <span id="pvariant" class="muted"></span></div>
+        <button id="stopbtn" class="btn danger">Stop</button></div>
+      <div class="bar"><div id="pbar"></div></div>
+      <div id="perror" class="err"></div>
+    </div>
+    <div id="livenodes" class="chips"></div>
+    <div id="liveflows" class="tiles"></div>
+    <div class="card"><h3>Round-trip time (live)</h3><div class="chartbox"><canvas id="livertt"></canvas></div></div>
+    <div class="card"><h3>Event log</h3><div id="log" class="log"></div></div>
+  </section>
+
+  <!-- ============ RESULTS ============ -->
+  <section id="tab-results" class="tab">
+    <div class="grid-results">
+      <div class="card"><div class="row between"><h3>Experiments</h3><button id="refresh" class="btn ghost">↻</button></div>
+        <div id="camps"></div></div>
+      <div id="resdetail" class="col"><div class="card muted">Select an experiment.</div></div>
+    </div>
+  </section>
+</main>
+<script src="app.js"></script>
+</body>
+</html>

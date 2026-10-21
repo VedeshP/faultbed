@@ -1,0 +1,25 @@
+# The headline experiment: same topology, same traffic, same seed - only the
+# protocol and the injected loss change. 4 protocols x 4 loss levels x 3 repeats.
+#
+# Wi-Fi based transports (udp, mqtt, coap) need an access point (a phone hotspot
+# is fine) and, for MQTT, a broker on the controller PC (e.g. Mosquitto).
+name: protocol-loss-sweep
+seed: 42
+nodes: [{id: 1}, {id: 2}, {id: 3}, {id: 4}]
+transport:
+  name: espnow
+  params:
+    channel: 6            # espnow: must equal the AP channel if Wi-Fi is also used nearby
+    wifi: {ssid: YOUR_SSID, pass: YOUR_PASSWORD}
+    host: 192.168.1.10    # mqtt: broker address (this PC)
+    confirmable: true     # coap: CON messages with ACK + retransmission
+topology: {preset: line}
+faults:
+  default: {model: bernoulli, p_loss: 0.0}
+flows:
+  - {id: 1, src: 1, dst: 4, interval_ms: 100, size: 32}
+duration_s: 30
+repeats: 3
+sweep:
+  transport.name: [espnow, udp, mqtt, coap]
+  faults.default.p_loss: [0.0, 0.05, 0.15, 0.3]

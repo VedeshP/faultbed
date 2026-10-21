@@ -1,0 +1,20 @@
+# Bursty (Gilbert-Elliott) loss on one directed hop, delay + jitter on another,
+# and a 5-second link cut half way through. Shows per-link, per-direction faults.
+name: bursty-link
+seed: 3
+nodes: [{id: 1}, {id: 2}, {id: 3}, {id: 4}]
+transport:
+  name: coap
+  params: {confirmable: true, ack_timeout_ms: 500, max_retransmit: 4, wifi: {ssid: YOUR_SSID, pass: YOUR_PASSWORD}}
+topology: {preset: star, center: 1}
+faults:
+  links:
+    "2->1": {model: gilbert_elliott, ge_p_gb: 0.05, ge_p_bg: 0.3, ge_loss_good: 0.01, ge_loss_bad: 0.7}
+    "1->3": {delay_ms: 40, jitter_ms: 20}
+flows:
+  - {id: 1, src: 2, dst: 3, interval_ms: 100, size: 48}
+  - {id: 2, src: 4, dst: 2, interval_ms: 150, size: 48, pattern: poisson}
+timeline:
+  - {at_s: 12, action: fault, link: "1->4", rule: {blackout: true}}
+  - {at_s: 17, action: clear_fault, link: "1->4"}
+duration_s: 30

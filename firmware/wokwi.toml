@@ -1,0 +1,14 @@
+# Run the real FaultBed firmware on a simulated ESP32 in Wokwi (VS Code extension).
+#   1. pio run -e esp32dev            (build the same image you flash on hardware)
+#   2. VS Code: F1 -> "Wokwi: Start Simulator"   (keep the simulator tab visible)
+#   3. python -m faultbed --port rfc2217://localhost:4000 boards
+# A second simulated board needs a second VS Code window with a copy of this file using another port (4001).
+[wokwi]
+version = 1
+firmware = ".pio/build/esp32dev/firmware.bin"
+elf = ".pio/build/esp32dev/firmware.elf"
+# Expose the simulated UART as a TCP serial port; the controller connects with pyserial.
+rfc2217ServerPort = 4000
+# Private gateway (paid Wokwi plan): lets the simulated board reach this PC as host.wokwi.internal,
+# e.g. the Mosquitto broker for MQTT runs. Without it, only outgoing internet connections work.
+gateway = true

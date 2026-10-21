@@ -1,0 +1,15 @@
+# Baseline: no injected faults. Run this first on every new setup - it measures
+# the real channel (natural loss, latency) that every other experiment sits on.
+name: baseline
+description: 4 nodes in a line (1-2-3-4), end-to-end flow plus a one-hop flow, no faults.
+seed: 1
+nodes: [{id: 1}, {id: 2}, {id: 3}, {id: 4}]
+transport:
+  name: espnow
+  params: {channel: 1, unicast: true}
+topology: {preset: line}
+flows:
+  - {id: 1, src: 1, dst: 4, interval_ms: 100, size: 32}
+  - {id: 2, src: 2, dst: 3, interval_ms: 200, size: 64}
+duration_s: 30
+warmup_s: 2

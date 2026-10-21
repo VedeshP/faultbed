@@ -1,0 +1,18 @@
+# Node failure & recovery: the relay of a 5-node ring dies (radio off) for 10 s.
+# Measures outage length, time to first delivery after revive, and transport
+# re-link time (Wi-Fi re-association + MQTT reconnect are part of this).
+name: relay-failure
+seed: 7
+nodes: [{id: 1}, {id: 2}, {id: 3}, {id: 4}, {id: 5}]
+transport:
+  name: mqtt
+  params: {host: 192.168.1.10, port: 1883, keepalive_s: 5, wifi: {ssid: YOUR_SSID, pass: YOUR_PASSWORD}}
+topology: {preset: line}
+flows:
+  - {id: 1, src: 1, dst: 5, interval_ms: 100, size: 32}
+  - {id: 2, src: 4, dst: 5, interval_ms: 250, size: 32}
+timeline:
+  - {at_s: 10, action: kill, node: 3, hard: true}
+  - {at_s: 20, action: revive, node: 3}
+duration_s: 35
+repeats: 3
